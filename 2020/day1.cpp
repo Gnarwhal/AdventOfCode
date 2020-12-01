@@ -51,10 +51,18 @@ auto find_2020_x2(const std::vector<i32> & list) -> void {
 auto find_2020_x3(const std::vector<i32> & list) -> void {
 	for (auto n0 = 0; n0 < list.size() - 2; ++n0) {
 		for (auto n1 = 1; n1 < list.size() - 1; ++n1) {
-			for (auto n2 = 2; n2 < list.size(); ++n2) {
-				if (list[n0] + list[n1] + list[n2] == 2020) {
+			auto low  = n0 + 1;
+			auto high = n1;
+			auto n2   = (low + high) / 2;
+			while (low < high - 1) {
+				auto sum = 0;
+				if ((sum = list[n0] + list[n1] + list[n2]) == 2020) {
 					std::cout << (list[n0] * list[n1] * list[n2]) << std::endl;
 					return;
+				} else if (sum > 2020) {
+					low = n2 + 1;
+				} else {
+					high = n2;
 				}
 			}
 		}
