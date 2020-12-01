@@ -1,0 +1,10 @@
+day1.out: out/types.o day1.cpp day1.input
+	g++ $(flags) day1.cpp out/types.o -o $@
+
+out/types.o: types.hpp types.cpp
+	mkdir -p out/
+	g++ $(flags) -c types.cpp -o $@
+
+.PHONY: clean
+clean:
+	rm out/* day*.out
