@@ -25,63 +25,71 @@
  *******************************************************************************/
 
 #include <vector>
-#include <algorithm>
 #include <string>
 #include <iostream>
 #include <fstream>
 
 #include "types.hpp"
 
-// Find 2 numbers that sum to 2020
-auto find_2020_x2(const std::vector<i32> & list) -> void {
-	auto begin = 0;
-	auto end   = list.size() - 1;
-	auto sum   = 0;
-	while ((sum = list[begin] + list[end]) != 2020) {
-		if (sum < 2020) {
-			++begin;
-		} else {
-			--end;
-		}
+struct Password {
+	u32 min;
+	u32 max;
+	char c;
+	std::string password;
+};
+
+auto extract_num(usize & index, const std::string & string) -> u32 {
+	auto num = u32(0);
+	--index;
+	while ('0' <= string[++index] && '9' >= string[index]) {
+		num = (num * 10) + (string[index] - '0');
 	}
-	std::cout << (list[begin] * list[end]) << std::endl;
+	return num;
 }
 
-// Find 3 numbers that sum to 2020
-auto find_2020_x3(const std::vector<i32> & list) -> void {
-	for (auto n0 = 0; n0 < list.size() - 2; ++n0) {
-		for (auto n1 = 1; n1 < list.size() - 1; ++n1) {
-			auto low  = n0 + 1;
-			auto high = n1;
-			auto n2   = (low + high) / 2;
-			while (low < high - 1) {
-				auto sum = 0;
-				if ((sum = list[n0] + list[n1] + list[n2]) == 2020) {
-					std::cout << (list[n0] * list[n1] * list[n2]) << std::endl;
-					return;
-				} else if (sum > 2020) {
-					low = n2 + 1;
-				} else {
-					high = n2;
-				}
+auto count_valid_sled(const std::vector<Password> & passwords) -> u32 {
+	auto valid = u32(0);
+	for (auto password : passwords) {
+		auto count = u32(0);
+		for (auto c : password.password) {
+			if (c == password.c) {
+				++count;
 			}
 		}
+		valid += (password.min <= count && count <= password.max);
 	}
+	return valid;
+}
+
+auto count_valid_toboggan(const std::vector<Password> & passwords) -> u32 {
+	auto valid = u32(0);
+	for (auto password : passwords) {
+		if ((password.password[password.min - 1] == password.c)
+		  ^ (password.password[password.max - 1] == password.c)) {
+			++valid;
+		}
+	}
+	return valid;
 }
 
 auto main(i32 argc, char * argv[]) -> i32 {
-	auto list = std::vector<i32>();
+	auto passwords = std::vector<Password>();
 	{
 		auto line = std::string();
-		auto file = std::ifstream("day1.input");
+		auto file = std::ifstream("day2.input");
 		while (getline(file, line)) {
-			list.push_back(std::stoi(line));
+			auto index = usize(0);
+			auto password = Password{};
+			password.min      = extract_num(  index, line);
+			password.max      = extract_num(++index, line);
+			password.c        = line[++index];
+			password.password = line.substr(index + 3, line.size() - index - 3);
+			passwords.push_back(password);
 		}
 	}
-	std::sort(list.begin(), list.end());
 
-	find_2020_x2(list);
-	find_2020_x3(list);
+	std::cout << count_valid_sled(passwords)     << std::endl;
+	std::cout << count_valid_toboggan(passwords) << std::endl;
 
 	return 0;
 }
