@@ -42,10 +42,7 @@ auto main(i32 argc, char * argv[]) -> i32 {
 	while (getline(file, line)) {
 		auto local_seat = usize(0);
 		for (auto i = usize(0); i < 7 + 3; ++i) {
-			local_seat <<= 1;
-			if (line[i] == 'B' || line[i] == 'R') {
-				local_seat |= 1;
-			}
+			local_seat = (local_seat << 1) | (line[i] == 'B' || line[i] == 'R');
 		}
 		if (local_seat > seat) {
 			seat = local_seat;
