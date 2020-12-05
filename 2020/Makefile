@@ -13,6 +13,9 @@ day4.out: out/types.o day4.cpp
 day5.out: out/types.o day5.cpp
 	g++-10 -std=c++2a $(flags) day5.cpp out/types.o -o $@
 
+day%.cpp:
+	cp template.cpp $@
+
 out/types.o: types.hpp types.cpp
 	mkdir -p out/
 	g++-10 -std=c++2a $(flags) -c types.cpp -o $@
