@@ -40,7 +40,7 @@ auto extract_op(const std::string & string) -> Op {
 	else if (string.substr(0, 3) == "jmp") { op.code = Jmp; }
 	else if (string.substr(0, 3) == "nop") { op.code = Nop; }
 
-	op.num = std::stoi(string.substr(4, string.size() - 4));
+	op.num = std::stoi(string.substr(string.find(" ") + 1, string.size() - 4));
 
 	return op;
 }
