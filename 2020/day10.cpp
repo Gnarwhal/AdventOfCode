@@ -31,14 +31,46 @@
 
 #include "types.hpp"
 
+struct Pair {
+	u64 jolt;
+	u64 count;
+};
+
+auto operator<(const Pair & left, const Pair & right) -> bool {
+	return left.jolt < right.jolt;
+}
+
 auto main(i32 argc, char * argv[]) -> i32 {
+	auto jolts = std::vector<Pair>{{ 0, 1 }};
 	{
 		auto line = std::string();
-		auto file = std::ifstream("dayNUM.input");
+		auto file = std::ifstream("day10.input");
 		while (getline(file, line)) {
-			
+			jolts.push_back({ (u64) std::stoll(line), 0 });
 		}
 	}
+	std::sort(jolts.begin(), jolts.end());
+	jolts.push_back({ jolts[jolts.size() - 1].jolt + 3, 0 });
+
+	auto dif1 = usize(0);
+	auto dif3 = usize(0);
+	for (auto i = usize(0); i < jolts.size() - 1; ++i) {
+		     if (jolts[i + 1].jolt - jolts[i].jolt == 1) ++dif1;
+		else if (jolts[i + 1].jolt - jolts[i].jolt == 3) ++dif3;
+	}
+
+	std::cout << (dif1 * dif3) << std::endl;
+
+	for (auto i = i32(0); i < jolts.size() - 1; ++i) {
+		for (auto j = i + 1; j < jolts.size(); ++j) {
+			if (jolts[j].jolt <= jolts[i].jolt + 3) {
+				jolts[j].count += jolts[i].count;
+			} else {
+				break;
+			}
+		}
+	}
+	std::cout << jolts[jolts.size() - 1].count << std::endl;
 
 	return 0;
 }
