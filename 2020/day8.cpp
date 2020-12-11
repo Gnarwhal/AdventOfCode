@@ -32,7 +32,7 @@
 #include "types.hpp"
 
 enum OpCode { Acc, Jmp, Nop };
-struct Op{ OpCode code; i32 num; };
+struct Op{ OpCode code; i32 num; bool executed; };
 auto extract_op(const std::string & string) -> Op {
 	auto op = Op{ Nop, 0 };
 	auto op_code_str = string.substr(0, 3);
@@ -47,11 +47,11 @@ auto extract_op(const std::string & string) -> Op {
 
 struct State{ u32 isp; i32 acc; };
 
-auto execute(State & state, const std::vector<Op> & ops) -> void {
+auto execute(State & state, std::vector<Op> & ops) -> void {
 	switch (ops[state.isp].code) {
-		case Acc: state.acc += ops[state.isp].num; ++state.isp; break;
-		case Jmp: state.isp += ops[state.isp].num;              break;
-		case Nop:                                  ++state.isp; break;
+		case Acc: ops[state.isp].executed = true; state.acc += ops[state.isp].num; ++state.isp; break;
+		case Jmp: ops[state.isp].executed = true; state.isp += ops[state.isp].num;              break;
+		case Nop: ops[state.isp].executed = true;                                  ++state.isp; break;
 	}
 }
 
@@ -65,9 +65,8 @@ auto attempt_swap(State & state, std::vector<Op> & ops) -> bool {
 	}
 
 	auto local_state = state;
-	auto executed    = std::vector<bool>(ops.size());
-	while (local_state.isp < ops.size() && !executed[local_state.isp]) {
-		executed[local_state.isp] = true;
+	ops[state.isp].executed = false;
+	while (local_state.isp < ops.size() && !ops[local_state.isp].executed) {
 		execute(local_state, ops);
 	}
 	if (local_state.isp >= ops.size()) {
@@ -93,15 +92,15 @@ auto main(i32 argc, char * argv[]) -> i32 {
 	}
 	
 	auto state = State{ 0, 0 };
-	auto executed      = std::vector<bool>(ops.size());
-	while (!executed[state.isp]) {
-		executed[state.isp] = true;
+	while (!ops[state.isp].executed) {
 		execute(state, ops);
 	}
 	std::cout << state.acc << std::endl;
 
+	for (auto & op : ops) { op.executed = false; }
+
 	state = State{ 0, 0 };
-	while (state.isp < ops.size()) {
+	for (;;) {
 		if (attempt_swap(state, ops)) {
 			std::cout << state.acc << std::endl;
 			break;
