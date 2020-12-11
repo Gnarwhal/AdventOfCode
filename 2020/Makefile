@@ -14,4 +14,4 @@ out/types.o: misc/types.hpp misc/types.cpp
 
 .PHONY: clean
 clean:
-	rm out/* day*.out day*.output
+	rm -f out/* day*.out day*.output
