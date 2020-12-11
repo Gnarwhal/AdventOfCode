@@ -32,7 +32,8 @@
 #include <iostream>
 #include <fstream>
 
-#include "types.hpp"
+#include "../misc/types.hpp"
+#include "../misc/print.hpp"
 
 struct SubBag { std::string type; u32 count; };
 
@@ -60,11 +61,11 @@ auto count_to(const std::string & search, std::map<std::string, Edges> & map) ->
 	return counted;
 }
 
-auto main(i32 argc, char * argv[]) -> i32 {
+auto day7() -> void {
 	auto bag_graph = std::map<std::string, Edges>();
 	{
 		auto line = std::string();
-		auto file = std::ifstream("day7.input");
+		auto file = std::ifstream("inputs/day7.input");
 		while (getline(file, line)) {
 			auto find = line.find("bag") - 1;
 			auto bag_type = line.substr(0, line.find("bag") - 1);
@@ -96,9 +97,7 @@ auto main(i32 argc, char * argv[]) -> i32 {
 			}
 		}
 	}
-	std::cout << seen.size() << std::endl;
+	print(seen.size());
 
-	std::cout << (count_to("shiny gold", bag_graph) - 1) << std::endl;
-
-	return 0;
+	print((count_to("shiny gold", bag_graph) - 1));
 }

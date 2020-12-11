@@ -24,41 +24,8 @@
  *
  *******************************************************************************/
 
-#include <vector>
-#include <algorithm>
-#include <string>
-#include <iostream>
-#include <fstream>
-
-#include "types.hpp"
-
-auto main(i32 argc, char * argv[]) -> i32 {
-	auto seat = usize(0);
-	auto line = std::string();
-	auto file = std::ifstream("day5.input");
-
-	auto seats = std::vector<usize>();
-
-	while (getline(file, line)) {
-		auto local_seat = usize(0);
-		for (auto i = usize(0); i < 7 + 3; ++i) {
-			local_seat = (local_seat << 1) | (line[i] == 'B' || line[i] == 'R');
-		}
-		if (local_seat > seat) {
-			seat = local_seat;
-		}
-		seats.push_back(local_seat);
-	}
-	std::cout << seat << std::endl;
-
-	std::sort(seats.begin(), seats.end());
-
-	for (auto i = usize(0); i < seats.size() - 1; ++i) {
-		if (seats[i] + 2 == seats[i + 1]) {
-			std::cout << (seats[i] + 1) << std::endl;
-			break;
-		}
-	}
-
-	return 0;
-}
+#ifndef TEST_BUILD
+#define print(x) std::cout << (x) << std::endl
+#else
+#define print(x)
+#endif

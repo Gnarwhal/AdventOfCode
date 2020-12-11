@@ -29,7 +29,8 @@
 #include <iostream>
 #include <fstream>
 
-#include "types.hpp"
+#include "../misc/types.hpp"
+#include "../misc/print.hpp"
 
 struct Password {
 	u32 min;
@@ -72,11 +73,11 @@ auto count_valid_toboggan(const std::vector<Password> & passwords) -> u32 {
 	return valid;
 }
 
-auto main(i32 argc, char * argv[]) -> i32 {
+auto day2() -> void {
 	auto passwords = std::vector<Password>();
 	{
 		auto line = std::string();
-		auto file = std::ifstream("day2.input");
+		auto file = std::ifstream("inputs/day2.input");
 		while (getline(file, line)) {
 			auto index = usize(0);
 			auto password = Password{};
@@ -88,8 +89,6 @@ auto main(i32 argc, char * argv[]) -> i32 {
 		}
 	}
 
-	std::cout << count_valid_sled(passwords)     << std::endl;
-	std::cout << count_valid_toboggan(passwords) << std::endl;
-
-	return 0;
+	print(count_valid_sled(passwords)    );
+	print(count_valid_toboggan(passwords));
 }

@@ -30,7 +30,8 @@
 #include <iostream>
 #include <fstream>
 
-#include "types.hpp"
+#include "../misc/types.hpp"
+#include "../misc/print.hpp"
 
 template <typename Lambda>
 auto iterate_seats(const auto & seats, Lambda callback) {
@@ -62,12 +63,12 @@ auto count_seats(const auto & seats) -> usize {
 	return occupied;
 }
 
-auto main(i32 argc, char * argv[]) -> i32 {
+auto day11() -> void {
 	auto bit = u8(0b1);
 	auto seats = std::array<std::vector<std::string>, 2>();
 	{
 		auto line = std::string();
-		auto file = std::ifstream("day11.input");
+		auto file = std::ifstream("inputs/day11.input");
 		while (getline(file, line)) {
 			seats[bit].push_back(line);
 		}
@@ -94,7 +95,7 @@ auto main(i32 argc, char * argv[]) -> i32 {
 	}
 	while (!seats_equal(seats));
 
-	std::cout << count_seats(seats[0]) << std::endl;
+	print(count_seats(seats[0]));
 
 	iterate_seats(seats[0], [&seats](i32 i, i32 j) {
 		seats[0][i][j] = seats[1][i][j] = 'L';
@@ -129,7 +130,5 @@ auto main(i32 argc, char * argv[]) -> i32 {
 		});
 	} while (!seats_equal(seats));
 
-	std::cout << count_seats(seats[0]) << std::endl;
-
-	return 0;
+	print(count_seats(seats[0]));
 }

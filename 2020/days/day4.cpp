@@ -29,7 +29,8 @@
 #include <fstream>
 #include <iostream>
 
-#include "types.hpp"
+#include "../misc/types.hpp"
+#include "../misc/print.hpp"
 
 struct KeyValue {
 	std::string key;
@@ -46,13 +47,13 @@ auto try_num(const std::string & passport, usize index) -> bool {
 	return Min <= num && num <= Max;
 };
 
-auto main(i32 argc, char * argv[]) -> i32 {
+auto day4() -> void {
 	auto valid_count1 = usize(0);
 	auto valid_count2 = usize(0);
 
 	auto passport = std::string();
 	auto line     = std::string();
-	auto file     = std::ifstream("day4.input");
+	auto file     = std::ifstream("inputs/day4.input");
 	while (getline(file, line)) {
 		if (line == "") {
 			auto elements = std::vector<KeyValue>{
@@ -108,7 +109,6 @@ auto main(i32 argc, char * argv[]) -> i32 {
 		}
 	}
 
-	std::cout << valid_count1 << ", " << valid_count2 << std::endl;
-	
-	return 0;
+	print(valid_count1);
+	print(valid_count2);
 }

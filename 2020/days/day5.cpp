@@ -25,52 +25,39 @@
  *******************************************************************************/
 
 #include <vector>
+#include <algorithm>
 #include <string>
 #include <iostream>
 #include <fstream>
 
-#include "types.hpp"
+#include "../misc/types.hpp"
+#include "../misc/print.hpp"
 
-struct Pair {
-	u64 jolt;
-	u64 count;
-};
+auto day5() -> void {
+	auto seat = usize(0);
+	auto line = std::string();
+	auto file = std::ifstream("inputs/day5.input");
 
-auto operator<(const Pair & left, const Pair & right) -> bool {
-	return left.jolt < right.jolt;
-}
+	auto seats = std::vector<usize>();
 
-auto main(i32 argc, char * argv[]) -> i32 {
-	auto jolts = std::vector<Pair>{{ 0, 1 }};
-	{
-		auto line = std::string();
-		auto file = std::ifstream("day10.input");
-		while (getline(file, line)) {
-			jolts.push_back({ (u64) std::stoll(line), 0 });
+	while (getline(file, line)) {
+		auto local_seat = usize(0);
+		for (auto i = usize(0); i < 7 + 3; ++i) {
+			local_seat = (local_seat << 1) | (line[i] == 'B' || line[i] == 'R');
+		}
+		if (local_seat > seat) {
+			seat = local_seat;
+		}
+		seats.push_back(local_seat);
+	}
+	print(seat);
+
+	std::sort(seats.begin(), seats.end());
+
+	for (auto i = usize(0); i < seats.size() - 1; ++i) {
+		if (seats[i] + 2 == seats[i + 1]) {
+			print((seats[i] + 1));
+			break;
 		}
 	}
-	std::sort(jolts.begin(), jolts.end());
-	jolts.push_back({ jolts[jolts.size() - 1].jolt + 3, 0 });
-
-	auto dif1 = usize(0);
-	auto dif3 = usize(0);
-	for (auto i = usize(0); i < jolts.size() - 1; ++i) {
-		     if (jolts[i + 1].jolt - jolts[i].jolt == 1) ++dif1;
-		else if (jolts[i + 1].jolt - jolts[i].jolt == 3) ++dif3;
-	}
-
-	std::cout << (dif1 * dif3) << std::endl;
-
-	for (auto i = i32(0); i < jolts.size() - 1; ++i) {
-		for (auto j = i + 1; j < jolts.size(); ++j) {
-			if (jolts[j].jolt <= jolts[i].jolt + 3) {
-				jolts[j].count += jolts[i].count;
-			} else {
-				break;
-			}
-		}
-	}
-	std::cout << jolts[jolts.size() - 1].count << std::endl;
-
-	return 0;
 }

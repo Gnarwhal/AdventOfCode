@@ -24,45 +24,43 @@
  *
  *******************************************************************************/
 
-#include <vector>
-#include <string>
 #include <iostream>
-#include <fstream>
+#include <string>
+#include <chrono>
 
 #include "types.hpp"
 
-auto read_field_and_count_trees(std::vector<std::string> & trees, usize horizontal_increment, usize vertical_increment) -> u64 {
-	auto tree_count = u64(0);
+extern auto current_day() -> void;
 
-	auto x_index = usize(-horizontal_increment);
-	auto y_index = usize(-1);
-	auto line = std::string();
-	auto file = std::ifstream("day3.input");
-
-	while (getline(file, line)) {
-		auto vertical_check = (++y_index % vertical_increment == 0);
-		tree_count += vertical_check * (line[(x_index += (vertical_check * horizontal_increment)) % line.size()] == '#');
+auto main(i32 argc, char * argv[]) -> i32 {
+	auto TEST_CYCLES = 1;
+	if (argc >= 2) {
+		TEST_CYCLES = std::stoi(argv[1]);
 	}
 
-	return tree_count;
-}
+	std::cout << "Starting test with " << TEST_CYCLES << " iterations..." << std::endl;
+	auto begin1 = std::chrono::high_resolution_clock::now();
 
-auto main(i32 argc, char ** argv) -> i32 {
-	auto trees       = std::vector<std::string>();
-	auto tree_counts = std::vector<u64>();
-
-	tree_counts.push_back(read_field_and_count_trees(trees, 3, 1));
-	std::cout << tree_counts[0] << std::endl;
-
-	tree_counts.push_back(read_field_and_count_trees(trees, 1, 1));
-	tree_counts.push_back(read_field_and_count_trees(trees, 5, 1));
-	tree_counts.push_back(read_field_and_count_trees(trees, 7, 1));
-	tree_counts.push_back(read_field_and_count_trees(trees, 1, 2));
-	auto tree_count_product = u64(1);
-	for (auto tree_count : tree_counts) {
-		tree_count_product *= tree_count;
+	for (auto i = usize(0); i < TEST_CYCLES; ++i) {
+		current_day();
 	}
-	std::cout << tree_count_product << std::endl;
+
+	auto end1 = std::chrono::high_resolution_clock::now();
+
+	if (argc >= 3) {
+		if (argv[2] == std::string("millis")) {
+			std::cout << "Tests completed in " << std::chrono::duration_cast<std::chrono::milliseconds>(end1 - begin1).count() << " milliseconds"<< std::endl;
+		} else if (argv[2] == std::string("nanos")) {
+			std::cout << "Tests completed in " << std::chrono::duration_cast<std::chrono::nanoseconds>(end1 - begin1).count() << " nanoseconds"<< std::endl;
+		} else if (argv[2] == std::string("micros")) {
+			std::cout << "Tests completed in " << std::chrono::duration_cast<std::chrono::microseconds>(end1 - begin1).count() << " microsenconds"<< std::endl;
+		} else {
+			std::cout << "Unkown time scale '" << argv[2] << "'" << std::endl;
+		}
+	} else {
+			std::cout << "Tests completed in " << std::chrono::duration_cast<std::chrono::microseconds>(end1 - begin1).count() << " microseconds"<< std::endl;
+	}
 
 	return 0;
 }
+

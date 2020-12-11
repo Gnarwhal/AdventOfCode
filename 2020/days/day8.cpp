@@ -29,7 +29,8 @@
 #include <iostream>
 #include <fstream>
 
-#include "types.hpp"
+#include "../misc/types.hpp"
+#include "../misc/print.hpp"
 
 enum OpCode { Acc, Jmp, Nop };
 struct Op{ OpCode code; i32 num; bool executed; };
@@ -81,11 +82,11 @@ auto attempt_swap(State & state, std::vector<Op> & ops) -> bool {
 	return false;
 }
 
-auto main(i32 argc, char * argv[]) -> i32 {
+auto day8() -> void {
 	auto ops = std::vector<Op>();
 	{
 		auto line = std::string();
-		auto file = std::ifstream("day8.input");
+		auto file = std::ifstream("inputs/day8.input");
 		while (getline(file, line)) {
 			ops.push_back(extract_op(line));
 		}
@@ -95,18 +96,16 @@ auto main(i32 argc, char * argv[]) -> i32 {
 	while (!ops[state.isp].executed) {
 		execute(state, ops);
 	}
-	std::cout << state.acc << std::endl;
+	print(state.acc);
 
 	for (auto & op : ops) { op.executed = false; }
 
 	state = State{ 0, 0 };
 	for (;;) {
 		if (attempt_swap(state, ops)) {
-			std::cout << state.acc << std::endl;
+			print(state.acc);
 			break;
 		}
 		execute(state, ops);
 	}
-
-	return 0;
 }

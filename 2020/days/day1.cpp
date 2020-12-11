@@ -25,64 +25,62 @@
  *******************************************************************************/
 
 #include <vector>
+#include <algorithm>
 #include <string>
 #include <iostream>
 #include <fstream>
 
-#include "types.hpp"
+#include "../misc/types.hpp"
+#include "../misc/print.hpp"
 
-auto find_sum(usize index, std::vector<u64> xmas) {
-	for (auto i = index - 25; i < index - 1; ++i) {
-		for (auto j = i + 1; j < index; ++j) {
-			if (xmas[i] + xmas[j] == xmas[index]) {
-				return true;
+// Find 2 numbers that sum to 2020
+auto find_2020_x2(const std::vector<i32> & list) -> void {
+	auto begin = 0;
+	auto end   = list.size() - 1;
+	auto sum   = 0;
+	while ((sum = list[begin] + list[end]) != 2020) {
+		if (sum < 2020) {
+			++begin;
+		} else {
+			--end;
+		}
+	}
+	print((list[begin] * list[end]));
+}
+
+// Find 3 numbers that sum to 2020
+auto find_2020_x3(const std::vector<i32> & list) -> void {
+	for (auto n0 = 0; n0 < list.size() - 2; ++n0) {
+		for (auto n1 = 1; n1 < list.size() - 1; ++n1) {
+			auto low  = n0 + 1;
+			auto high = n1;
+			while (low < high) {
+				auto n2  = (low + high) / 2;
+				auto sum = 0;
+				if ((sum = list[n0] + list[n1] + list[n2]) == 2020) {
+					print((list[n0] * list[n1] * list[n2]));
+					return;
+				} else if (sum < 2020) {
+					low = n2 + 1;
+				} else {
+					high = n2;
+				}
 			}
 		}
 	}
-	return false;
 }
 
-auto main(i32 argc, char * argv[]) -> i32 {
-	auto xmas = std::vector<u64>();
-	auto line = std::string();
-	auto file = std::ifstream("day9.input");
-	while (getline(file, line)) {
-		xmas.push_back(std::stoll(line));
+auto day1() -> void {
+	auto list = std::vector<i32>();
+	{
+		auto line = std::string();
+		auto file = std::ifstream("inputs/day1.input");
+		while (getline(file, line)) {
+			list.push_back(std::stoi(line));
+		}
 	}
+	std::sort(list.begin(), list.end());
 
-	auto invalid = u64(0);
-	for (auto i = usize(25); i < xmas.size(); ++i) {
-		if (!find_sum(i, xmas)) {
-			std::cout << (invalid = xmas[i]) << std::endl;
-			break;
-		}
-	}
-	
-	auto head_index = 0;
-	auto tail_index = 1;
-	auto sum        = xmas[0] + xmas[1];
-	while (sum != invalid) {
-		if (sum < invalid) {
-			sum += xmas[++tail_index];
-		} else if (head_index + 1 < tail_index) {
-			sum -= xmas[head_index];
-			++head_index;
-		} else {
-			head_index = tail_index + 1;
-			tail_index = head_index + 1;
-			sum        = xmas[head_index] + xmas[tail_index];
-		}
-	}
-	auto min = xmas[tail_index];
-	auto max = xmas[tail_index];
-	for (auto i = head_index; i < tail_index; ++i) {
-		if (xmas[i] < min) {
-			min = xmas[i];
-		} else if (xmas[i] > max) {
-			max = xmas[i];
-		}
-	}
-	std::cout << (min + max) << std::endl;
-
-	return 0;
+	find_2020_x2(list);
+	find_2020_x3(list);
 }

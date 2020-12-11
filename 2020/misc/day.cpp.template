@@ -25,63 +25,19 @@
  *******************************************************************************/
 
 #include <vector>
-#include <algorithm>
 #include <string>
 #include <iostream>
 #include <fstream>
 
-#include "types.hpp"
+#include "../misc/types.hpp"
+#include "../misc/print.hpp"
 
-// Find 2 numbers that sum to 2020
-auto find_2020_x2(const std::vector<i32> & list) -> void {
-	auto begin = 0;
-	auto end   = list.size() - 1;
-	auto sum   = 0;
-	while ((sum = list[begin] + list[end]) != 2020) {
-		if (sum < 2020) {
-			++begin;
-		} else {
-			--end;
-		}
-	}
-	std::cout << (list[begin] * list[end]) << std::endl;
-}
-
-// Find 3 numbers that sum to 2020
-auto find_2020_x3(const std::vector<i32> & list) -> void {
-	for (auto n0 = 0; n0 < list.size() - 2; ++n0) {
-		for (auto n1 = 1; n1 < list.size() - 1; ++n1) {
-			auto low  = n0 + 1;
-			auto high = n1;
-			auto n2   = (low + high) / 2;
-			while (low < high - 1) {
-				auto sum = 0;
-				if ((sum = list[n0] + list[n1] + list[n2]) == 2020) {
-					std::cout << (list[n0] * list[n1] * list[n2]) << std::endl;
-					return;
-				} else if (sum > 2020) {
-					low = n2 + 1;
-				} else {
-					high = n2;
-				}
-			}
-		}
-	}
-}
-
-auto main(i32 argc, char * argv[]) -> i32 {
-	auto list = std::vector<i32>();
+auto current_day() -> void {
 	{
 		auto line = std::string();
-		auto file = std::ifstream("day1.input");
+		auto file = std::ifstream("inputs/current_day.input");
 		while (getline(file, line)) {
-			list.push_back(std::stoi(line));
+			
 		}
 	}
-	std::sort(list.begin(), list.end());
-
-	find_2020_x2(list);
-	find_2020_x3(list);
-
-	return 0;
 }

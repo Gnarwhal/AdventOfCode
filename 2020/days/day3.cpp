@@ -29,36 +29,53 @@
 #include <iostream>
 #include <fstream>
 
-#include "types.hpp"
+#include "../misc/types.hpp"
+#include "../misc/print.hpp"
 
-auto main(i32 argc, char * argv[]) -> i32 {
-	{
-		auto line    = std::string();
-		auto file    = std::ifstream("day6.input");
+struct TreeVector{ usize horz;    usize vert;    };
+struct Coordinate{ usize x_index; usize y_index; };
 
-		auto answers = std::vector<u32>(26);
-
-		auto sum_1 = usize(0);
-
-		auto group_size = usize(0);
-		auto sum_2      = usize(0);
-		while (getline(file, line)) {
-			if (line == "") {
-				for (auto i = usize(0); i < answers.size(); ++i) {
-					sum_1 += (answers[i] > 0);
-					sum_2 += (answers[i] == group_size);
-					answers[i] = 0;
-				}
-				group_size = 0;
-			} else {
-				++group_size;
-				for (char c : line) {
-					++answers[c  - 'a'];
-				}
-			}
-		}
-		std::cout << sum_1 << ", " << sum_2 << std::endl;
+auto read_field_and_count_trees(const std::vector<TreeVector> & vectors) -> std::vector<u64> {
+	auto tree_counts = std::vector<u64>(vectors.size());
+	auto coords      = std::vector<Coordinate>(vectors.size());
+	for (auto i = usize(0); i < coords.size(); ++i) {
+		coords[i] = { usize(-vectors[i].horz), usize(-1) };
 	}
 
-	return 0;
+	auto line = std::string();
+	auto file = std::ifstream("inputs/day3.input");
+
+	while (getline(file, line)) {
+		for (auto i = usize(0); i < vectors.size(); ++i) {
+			auto & vector = vectors[i];
+			auto & coord  = coords[i];
+			
+			auto vertical_check = (++coord.y_index % vector.vert == 0);
+			tree_counts[i] += vertical_check * (line[(coord.x_index += (vertical_check * vector.horz)) % line.size()] == '#');
+		}
+	}
+
+	return std::move(tree_counts);
+}
+
+auto day3() -> void {
+	auto trees       = std::vector<std::string>();
+	auto tree_counts = read_field_and_count_trees(
+		std::vector<TreeVector>{
+			{ 3, 1 },
+			{ 1, 1 },
+			{ 5, 1 },
+			{ 7, 1 },
+			{ 1, 2 },
+		}
+	);
+
+	print(tree_counts[0]);
+
+	auto tree_count_product = u64(1);
+	for (auto tree_count : tree_counts) {
+		tree_count_product *= tree_count;
+	}
+
+	print(tree_count_product);
 }
