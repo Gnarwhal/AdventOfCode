@@ -32,11 +32,14 @@
 #include "../misc/types.hpp"
 #include "../misc/print.hpp"
 
-struct Pair{ u64 id; usize index; };
+struct Pair{ i64 id; usize index; };
 
-auto find_least(u64 new_base, u64 new_loop, u64 req_base, u64 req_loop, u64 iter) -> u64 {
-	while ((new_base + ++iter * new_loop - req_base) % req_loop != 0);
-	return new_base + iter * new_loop;
+// f = a + n0 * b = c + n1 * d
+// f = req_base + n0 * req_loop = new_base + n1 * new_loop
+// Solve for the smallest integer value f such that this holds true
+auto find_least(i64 new_base, i64 new_loop, i64 req_base, i64 req_loop, i64 iter) -> i64 {
+	while ((req_base - new_base + ++iter * req_loop) % new_loop != 0);
+	return req_base + iter * req_loop;
 }
 
 auto day13() -> void {
@@ -55,7 +58,7 @@ auto day13() -> void {
 		while ((end = line.find(',', start)) != std::string::npos) {
 			id = line.substr(start, end - start);
 			if (id != "x") {
-				buses.push_back({ u64(std::stoi(line.substr(start, end - start))), index });
+				buses.push_back({ i64(std::stoi(line.substr(start, end - start))), index });
 			}
 			start = end + 1;
 			++index;
@@ -63,7 +66,7 @@ auto day13() -> void {
 		end = line.size();
 		id = line.substr(start, end - start);
 		if (id != "x") {
-			buses.push_back({ u64(std::stoi(line.substr(start, end - start))), index });
+			buses.push_back({ i64(std::stoi(line.substr(start, end - start))), index });
 		}
 	}
 	
@@ -78,18 +81,12 @@ auto day13() -> void {
 	}
 	print((id * minutes));
 
-	auto req_base = usize(0);
-	auto req_loop = usize(1);
+	auto req_base = usize(buses[0].index);
+	auto req_loop = usize(buses[0].id   );
 	for (auto i = usize(1); i < buses.size(); ++i) {
-		auto base_loop = usize(-1);
-		while ((++base_loop * buses[0].id + buses[i].index) % buses[i].id != 0);
-
-		auto rep_loop = usize(0);
-		while ((++rep_loop * buses[0].id) % buses[i].id != 0);
-
-		req_base = find_least(base_loop, rep_loop, req_base, req_loop, -1);
+		req_base = find_least(-buses[i].index, buses[i].id, req_base, req_loop, -1);
 		if (i < buses.size() - 1) {
-			req_loop = find_least(0, rep_loop, 0, req_loop, 0);
+			req_loop = find_least(0, buses[i].id, 0, req_loop, 0);
 		}
 		/*
 		required_base (rqb), required_loop (rql)
@@ -102,5 +99,5 @@ auto day13() -> void {
 		b0 * rql = b1 * rl < minimize and store in required loop
 		*/
 	}
-	print((req_base * buses[0].id));
+	print(req_base);
 }
